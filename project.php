@@ -11,12 +11,14 @@ $responseArr = $main->getAPIData('https://api.github.com/gists/public');
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
-    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Hugo 0.87.0">
-    <title>TSL Hiring Test 2020</title>
+    <title>TSL Tech 2020 Hiring Quiz</title>
 
     <link rel="canonical" href="https://getbootstrap.com/docs/5.1/examples/album/">
 
+    <style>
+
+    </style>
     
 
     <!-- Bootstrap core CSS -->
@@ -35,6 +37,14 @@ $responseArr = $main->getAPIData('https://api.github.com/gists/public');
 
 
     <style>
+      .alert{
+          display: none;
+          width: 200px;
+          height: 40px;
+          font-size: 11px;
+          align-items: center;
+      }
+
       .bd-placeholder-img {
         font-size: 1.125rem;
         text-anchor: middle;
@@ -60,14 +70,32 @@ $responseArr = $main->getAPIData('https://api.github.com/gists/public');
       <div class="row">
         <div class="col-sm-8 col-md-7 py-4">
           <h4 class="text-white">About</h4>
-          <p class="text-muted">Add some information about the album below, the author, or any other background context. Make it a few sentences long so folks can pick up some informative tidbits. Then, link them off to some social networking sites or contact information.</p>
+          <p class="text-muted">This project was developed using PHP, and Bootstrap for its UI element</p>
         </div>
         <div class="col-sm-4 offset-md-1 py-4">
-          <h4 class="text-white">Contact</h4>
+          <h4 class="text-white"></h4>
           <ul class="list-unstyled">
-            <li><a href="#" class="text-white">Follow on Twitter</a></li>
-            <li><a href="#" class="text-white">Like on Facebook</a></li>
-            <li><a href="#" class="text-white">Email me</a></li>
+            <li><a href="project.php" class="text-white">Public Gists</a></li>
+            <li><a href="project-raw.php" class="text-white" target="_blank">Public Gists Raw</a></li>
+            <li><a href="project-storage.php" class="text-white" onclick="showLocalStorage()" data-bs-toggle="modal" data-bs-target="#modal_bookmark">Bookmark Gists</a></li>
+
+            <!-- Modal -->
+            <div class="modal fade" id="modal_bookmark" tabindex="-1" aria-labelledby="modal_bookmark" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="modal_bookmark">List of Bookmark Gists</h5>
+                  </div>
+                  <div class="modal-body">
+                    <p id="gistsUrlLists"></p>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
           </ul>
         </div>
       </div>
@@ -104,7 +132,7 @@ $responseArr = $main->getAPIData('https://api.github.com/gists/public');
         <div class="col">
           <div class="card shadow-sm">
             <?php if($mainValue['owner']['avatar_url'] != ""){?>
-            <img src="<?php echo $mainValue['owner']['avatar_url']; ?>" alt="Girl in a jacket" width="100%" height="225">
+            <img src="<?php echo $mainValue['owner']['avatar_url']; ?>" alt="" width="100%" height="225">
             <?php } else {?>
             <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"/><text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text></svg>
             <?php } ?>
@@ -137,6 +165,9 @@ $responseArr = $main->getAPIData('https://api.github.com/gists/public');
                         <?php foreach($mainValue['files'] as $fileValue){?>
                           <li class="list-group-item">Filename:&nbsp;<a href="<?php echo $fileValue['raw_url']; ?>" target="_blank" download><?php echo $fileValue['filename'];?></a></li>
                         <?php } ?>
+                        <?php if($mainValue['description'] != ""){?>
+                          <li class="list-group-item">Description:&nbsp;<a><?php echo $mainValue['description'];?></a></li>
+                        <?php } ?>
                           <?php 
                           $createdDateTime = date('Y-m-d h:i:s', strtotime($mainValue['created_at']));
                           $updatedDateTime = date('Y-m-d h:i:s', strtotime($mainValue['updated_at']));
@@ -157,7 +188,24 @@ $responseArr = $main->getAPIData('https://api.github.com/gists/public');
                   </div>
                 </div>
 
-                  <button type="button" class="btn btn-sm btn-outline-secondary">Bookmark</button>
+                  <button type="button" id="button_bookmark<?php echo $mainValue['owner']['id']; ?>" data-bs-toggle="modal" data-bs-target="#modal_bookmark<?php echo $mainValue['owner']['id']; ?>" class="btn btn-sm btn-outline-secondary" onclick="addIntoLocalStorage('<?php echo $mainValue['html_url']?>', <?php echo $mainValue['owner']['id']; ?>)">Bookmark Gists</button>
+                  <!-- Modal -->
+                  <div class="modal fade" id="modal_bookmark<?php echo $mainValue['owner']['id']; ?>" tabindex="-1" role="dialog" aria-labelledby="modal_bookmark<?php echo $mainValue['owner']['id']; ?>" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Message</h5>
+                        </div>
+                        <div class="modal-body">
+                          Saved to Bookmark!
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
                 </div>
                 <!-- <small class="text-muted">9 mins</small> -->
               </div>
@@ -187,9 +235,24 @@ $responseArr = $main->getAPIData('https://api.github.com/gists/public');
 </html>
 
 <script type="text/javascript">
-var responseArr = <?php echo json_encode($responseArr); ?>;
+// var responseArr = <?php echo json_encode($responseArr); ?>;
 // for(var i=0, leni=responseArr.length; i < leni; i++){
 //   var id = responseArr[i]['owner']['id'];
 //   var modalId = '#modal_'+responseArr[i]['owner']['id'];
 // }
+const gistsUrlArr = [];
+function addIntoLocalStorage(value, id){
+    gistsUrlArr.push(value);
+    localStorage.setItem("setStorage", JSON.stringify(gistsUrlArr));
+}
+
+function showLocalStorage(){
+  var text = "";
+  var localStorageVal = JSON.parse(localStorage.getItem("setStorage"));
+  for (let i = 0; i < localStorageVal.length; i++) {
+    text += localStorageVal[i] + "<br>";
+  }
+
+  document.getElementById("gistsUrlLists").innerHTML = text;
+}
 </script>
